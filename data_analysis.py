@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from seaborn import heatmap
+from seaborn import heatmap, distplot
 
 train_data = pd.read_csv('./train.csv')
 test_data = pd.read_csv('./test.csv')
@@ -22,7 +22,7 @@ print(pd.DataFrame({"Train_Data": train_data.isnull().sum(), "Test_data": test_d
 lst_columns = ["Loan_Status", "Gender", "Education", "Property_Area", "Married", "Credit_History"]
 for column in lst_columns:
     # no of positive/negative cases present in the data
-    print(f"No of positive/negative {column} cases present in the data")
+    print(f"No of {column} cases present in the data")
     print(train_data[column].value_counts(), end="\n\n")
 
 
@@ -79,3 +79,12 @@ matrix = train_data.corr()
 f, ax = plt.subplots(figsize=(5, 5))
 heatmap(matrix, vmax=.8,  cmap="BuPu", annot=True)
 plt.show()
+
+for column in ["CoapplicantIncome", "ApplicantIncome", "LoanAmount", "Loan_Amount_Term"]:
+    plt.figure(1)
+    plt.subplot(121)
+    distplot(train_data[column])
+
+    plt.subplot(122)
+    train_data[column].plot.box(figsize=(16, 5))
+    plt.show()
