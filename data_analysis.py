@@ -26,6 +26,27 @@ for column in lst_columns:
     print(train_data[column].value_counts(), end="\n\n")
 
 
+lst_bins = [0, 2000, 4000, 6000, 85000]
+lst_group = ['Low', 'Average', 'High', 'Very High']
+dict_bin = {"ApplicantIncome": ([0, 2000, 4000, 6000, 85000], ['Low', 'Average', 'High', 'Very High']),
+            "LoanAmount": ([0, 100, 200, 400, 700], ['Low', 'Average', 'High', 'Very High']),
+            "Loan_Amount_Term": ([0, 200, 300, 400, 600], ['Low', 'Average', 'High', 'Very High']),
+            }
+
+for key in dict_bin:
+    train_data[key + "_bin"] = pd.cut(train_data[key], dict_bin[key][0], labels=dict_bin[key][1])
+
+for tuple_data in [("Gender", "Loan_Status"), ("Education", "Loan_Status"), ("Credit_History", "Loan_Status"),
+                   ("Property_Area", "Loan_Status"), ("Married", "Loan_Status"), ("ApplicantIncome_bin", "Loan_Status"),
+                   ("LoanAmount_bin", "Loan_Status"), ("Loan_Amount_Term_bin", "Loan_Status") ]:
+    Category = pd.crosstab(train_data[tuple_data[0]], train_data[tuple_data[1]])
+    Category.div(Category.sum(1).astype(float), axis=0).plot(kind="bar", stacked=True, figsize=(14, 8))
+    plt.xlabel(tuple_data[0])
+    plt.ylabel("Percentage")
+    plt.title(f"{tuple_data[0]} vs {tuple_data[1]}")
+    plt.show()
+
+
 # Correlation analysis
 train_data['Dependents'].replace('3+', 3, inplace=True)
 
@@ -76,7 +97,7 @@ train_data['Dependents'] = train_data['Dependents'].astype(int)
 test_data['Dependents'] = test_data['Dependents'].astype(int)
 
 matrix = train_data.corr()
-f, ax = plt.subplots(figsize=(5, 5))
+f, ax = plt.subplots(figsize=(12, 8))
 heatmap(matrix, vmax=.8,  cmap="BuPu", annot=True)
 plt.show()
 
@@ -86,5 +107,6 @@ for column in ["CoapplicantIncome", "ApplicantIncome", "LoanAmount", "Loan_Amoun
     distplot(train_data[column])
 
     plt.subplot(122)
-    train_data[column].plot.box(figsize=(16, 5))
+    train_data[column].plot.box(figsize=(16, 8))
     plt.show()
+
